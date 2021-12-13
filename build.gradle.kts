@@ -1,8 +1,6 @@
-import org.jetbrains.kotlin.gradle.plugin.*
-
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.1")
@@ -10,8 +8,14 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.3.61"
+    kotlin("jvm") version "1.6.0"
     java
+}
+
+tasks {
+    test {
+        maxHeapSize = "4g"
+    }
 }
 
 apply(plugin = "kotlinx-atomicfu")
@@ -20,8 +24,7 @@ group = "ru.ifmo.mpp"
 version = "1.0-SNAPSHOT"
 
 repositories {
-    jcenter()
-    maven("https://kotlin.bintray.com/kotlinx/")
+    mavenCentral()
 }
 
 dependencies {
@@ -29,28 +32,9 @@ dependencies {
     testImplementation(kotlin("test-junit"))
 }
 
-sourceSets {
-    main {
-        java.setSrcDirs(listOf("src"))
-        withConvention(KotlinSourceSet::class) {
-            kotlin.setSrcDirs(listOf("src"))
-        }
-    }
-    test {
-        withConvention(KotlinSourceSet::class) {
-            kotlin.setSrcDirs(listOf("test"))
-        }
-    }
-}
+sourceSets["main"].java.setSrcDirs(listOf("src"))
+sourceSets["test"].java.setSrcDirs(listOf("test"))
 
-tasks {
-    test {
-        testLogging.showExceptions = true
-        testLogging.showStandardStreams = true
-    }
-}
-
-// This is needed for the current version of AtomicFu that does not support Java 11 bytecode
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
